@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inkline – Email Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .copy-success {
+      animation: fadeInOut 2s ease;
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-[#f8f9fc] to-[#e2e8f0] min-h-screen p-6 font-inter text-gray-800">
+
+  <!-- Nav/Brand -->
+  <header class="flex justify-between items-center mb-10">
+    <div class="flex items-center space-x-2">
+      
+      <h1 class="text-2xl font-bold text-indigo-700 tracking-wide">InkLine</h1>
+    </div>
+    <span class="text-sm text-gray-500 hidden md:block">Empowering communication with automation</span>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-5xl mx-auto bg-white shadow-2xl rounded-3xl p-8 grid grid-cols-1 md:grid-cols-2 gap-10">
+
+    <!-- Form Area -->
+    <form id="emailForm" class="space-y-6">
+      <h2 class="text-xl font-semibold text-indigo-600">Client Details</h2>
+
+      <input id="clientName" type="text" placeholder="Client Name" required class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-400">
+
+      <input id="clientEmail" type="email" placeholder="Client Email" required class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-400">
+
+      <input id="amount" type="number" placeholder="Amount Due (₹)" class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-400">
+
+      <input id="dueDate" type="date" required class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-400">
+
+      <select id="status" required class="w-full p-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-400">
+        <option value="">-- Select Status --</option>
+        <option value="pending">Pending Payment</option>
+        <option value="overdue">Overdue</option>
+        <option value="reminder">First Reminder</option>
+      </select>
+
+      <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white w-full p-3 rounded-xl font-medium transition-all duration-200">
+        Generate Email
+      </button>
+    </form>
+
+    <!-- Output Area -->
+    <div class="space-y-4">
+      <h2 class="text-xl font-semibold text-indigo-600">Generated Email</h2>
+      <div id="emailOutput" class="bg-gray-50 border border-indigo-200 p-5 rounded-xl min-h-[300px] whitespace-pre-wrap font-mono text-sm text-gray-700">
+        <!-- Generated email will appear here -->
+      </div>
+
+      <button id="copyBtn" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg text-sm flex items-center space-x-2">
+        <span>📋 Copy Email</span>
+      </button>
+      <div id="copyMessage" class="text-green-600 text-sm font-semibold hidden">Copied to clipboard ✅</div>
+    </div>
+
+  </main>
+
+  <!-- Scripts -->
+  <script>
+    const form = document.getElementById('emailForm');
+    const output = document.getElementById('emailOutput');
+    const copyBtn = document.getElementById('copyBtn');
+    const copyMsg = document.getElementById('copyMessage');
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('clientName').value;
+      const email = document.getElementById('clientEmail').value;
+      const amount = document.getElementById('amount').value;
+      const dueDate = document.getElementById('dueDate').value;
+      const status = document.getElementById('status').value;
+
+      let subject = '';
+      let message = '';
+
+      if (status === 'pending') {
+        subject = `Payment Reminder - ₹${amount}`;
+        message = `Dear ${name},
+
+We hope you're doing well. This is a gentle reminder that an amount of ₹${amount} is due on ${dueDate}. Kindly make the payment before the due date to avoid late fees.
+
+If you've already made the payment, please disregard this message.
+
+Thank you,
+[Your Company]`;
+      } else if (status === 'overdue') {
+        subject = `Urgent: Overdue Payment of ₹${amount}`;
+        message = `Dear ${name},
+
+This is a follow-up regarding your overdue payment of ₹${amount}, which was due on ${dueDate}. Please clear the payment immediately to avoid further action.
+
+Let us know if you need any assistance.
+
+Regards,
+[Your Company]`;
+      } else {
+        subject = `Friendly Reminder – ₹${amount} Due`;
+        message = `Hi ${name},
+
+Just a friendly reminder that you have an amount of ₹${amount} due on ${dueDate}. Feel free to reach out if you have any questions.
+
+Cheers,
+[Your Company]`;
+      }
+
+      output.innerText = `To: ${email}\nSubject: ${subject}\n\n${message}`;
+    });
+
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(output.innerText);
+      copyMsg.classList.remove('hidden');
+      copyMsg.classList.add('copy-success');
+
+      setTimeout(() => {
+        copyMsg.classList.add('hidden');
+        copyMsg.classList.remove('copy-success');
+      }, 2000);
+    });
+  </script>
+
+</body>
+</html>
